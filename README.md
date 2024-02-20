@@ -28,7 +28,8 @@ smells, the applied refactoring techniques, and any relevant metrics.
 - [x] Get basic GitHub stuff like pull requests working
 - [x] Get checkstyle working and format the output
 - [x] Form the prompt for single file refactoring.
-- [ ] TODO: see code-davinci-002
+- [ ] TODO: see code-davinci-002 / other 
+- [ ] Design smell detection
 - [ ] Write API code
 - [ ] Write code for creating branch and making pull request
 - [ ] Write job for periodically checking repo
