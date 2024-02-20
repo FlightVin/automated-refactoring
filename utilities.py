@@ -76,38 +76,65 @@ def create_pull_request(repo_owner, repo_name, base_branch, head_branch, title, 
         print(response.text)
         return None
     
-def run_checkstyle(checkstyle_dir_path, directory_path, output_file):
+def build_prompt(prompt_file_path, checkstyle_output_path, current_code_path):
     """
-    Run Checkstyle on Java code in a directory and save the results to an output file.
+    Build a prompt for a code completion task using information from a JSON prompt file,
+    the current code file, and Checkstyle metrics.
 
     Args:
-        checkstyle_dir_path (str): Path to the Checkstyle directory.
-        directory_path (str): Directory containing Java source files.
-        output_file (str): File to save Checkstyle results.
-    
+        prompt_file_path (str): Path to the JSON prompt file.
+        checkstyle_output_path (str): Path to the Checkstyle output file.
+        current_code_path (str): Path to the current Java code file.
+
     Returns:
-        CompletedProcess: The result of the Checkstyle command.
+        str: The constructed prompt for code completion.
     """
-    checkstyle_jar_path = os.path.join(checkstyle_dir_path, "checkstyle-10.13.0-all.jar")
-    checkstyle_xml_path = os.path.join(checkstyle_dir_path, "metric-checks.xml")
+    import json
+    import os
 
-    command = f"java -jar {checkstyle_jar_path} \
-        -c {checkstyle_xml_path} {directory_path} \
-        > {output_file}"
-    
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    # Load information from the JSON prompt file
+    with open(prompt_file_path, 'r') as json_file:
+        prompt_file = json.load(json_file)
 
-    # processing output even further
-    with open(output_file, 'r') as file:
-        lines = file.readlines()
+    # Extract the considered code path from the current code file path
+    considered_code_path = current_code_path.split("temp")[1][1:]
 
-    # removing system dependent paths
-    prefix_to_remove = directory_path
-    modified_lines = [line.split(prefix_to_remove)[-1].strip()+"\n" for line in lines]
-    modified_lines = modified_lines[1:-1] # leave out audit statements
+    # Construct the base prompt using information from the prompt file
+    prompt = prompt_file["base"] + prompt_file["code_desc"].format(file_name=considered_code_path)
 
-    with open(output_file, 'w') as file:
-        file.writelines(modified_lines)
+    # Read the content of the current code file and add it to the prompt
+    with open(current_code_path) as f:
+        current_code = f.read()
 
-    return result
+    prompt += "```java\n"
+    prompt += current_code
+    prompt += "\n```\n\n"
 
+    # Add code metrics information from Checkstyle output
+    prompt += prompt_file["checkstyle_desc"]
+
+    with open(checkstyle_output_path) as f:
+        all_code_metrics = f.readlines()
+
+    # Filter out metrics for the current file
+    code_file_name = os.path.basename(current_code_path)
+    current_code_metrics = ""
+    for i in all_code_metrics:
+        if code_file_name in i:
+            current_code_metrics += " - "
+            current_code_metrics += i
+    current_code_metrics += "\n"
+
+    # Handle the case where no smells were found
+    if current_code_metrics == "\n":
+        current_code_metrics = "No smells were found\n"
+
+    prompt += current_code_metrics
+
+    # Add a description of code smells
+    prompt += prompt_file["checkstyle_metrics"]
+
+    # Add the ending part of the prompt
+    prompt += prompt_file["prompt_ending"]
+
+    return prompt

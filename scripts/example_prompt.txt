@@ -634,5 +634,5 @@ The description of the metrics given above are:
  - JavaNCSS: Roughly said the NCSS metric is calculated by counting the source lines which are not comments, (nearly) equivalent to counting the semicolons and opening curly braces. Rationale: Too large methods and classes are hard to read and costly to maintain. A large NCSS number often means that a method or class has too many responsibilities and/or functionalities which should be decomposed into smaller units. 
  - NPathComplexity: The NPATH metric computes the number of possible execution paths through a function(method). It takes into account the nesting of conditional statements and multipart boolean expressions (A && B, C || D, E ? F :G and their combinations). 
 
-Think carefully and remember that you are a seasoned engineer. Only return me the refactored code block.
+Think carefully and remember that you are a seasoned software engineer experienced in refactoring codebases. Only return me the refactored code block.
 
