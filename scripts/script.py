@@ -1,4 +1,5 @@
 import openai
+from dotenv import load_dotenv
 
 # print the version of the openai library, assert it to be equal to 0.28.0
 print(openai.__version__)
@@ -7,7 +8,9 @@ import os
 import git
 from git import Repo
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 print("OpenAI API Key:", openai.api_key)
 
 GITHUB_REPO_URL = "https://github.com/FlightVin/refactoring-test-repo"
