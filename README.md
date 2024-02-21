@@ -30,6 +30,9 @@ smells, the applied refactoring techniques, and any relevant metrics.
 - [x] Form the prompt for single file refactoring.
 - [x] Design smell detection
 - [x] Write API code (pulls latest code after checking for changes in the specified repository to check for smells)
-- [ ] Write code for creating branch and making pull request
 - [x] Write script for periodically checking repo
-- [ ] Write code for actually refactoring the code based on the smells suggested. Do some text processing on it if required ?
+- [x] Write code for actually refactoring the code based on the smells suggested.
+- [ ] Compare with other gpt models (codex?)
+- [ ] Integrate code for creating branch and making pull request with `combined_script.py` in scripts.
+- [ ] Modify the cronjob for making pull requests and publishing `refactored_code.java` which is the current output of the above script.
+- [ ] Do some text processing on the output if required ?
