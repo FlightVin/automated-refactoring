@@ -28,8 +28,8 @@ smells, the applied refactoring techniques, and any relevant metrics.
 - [x] Get basic GitHub stuff like pull requests working
 - [x] Get checkstyle working and format the output
 - [x] Form the prompt for single file refactoring.
-- [ ] TODO: see code-davinci-002 / other 
-- [ ] Design smell detection
-- [ ] Write API code
+- [x] Design smell detection
+- [x] Write API code (pulls latest code after checking for changes in the specified repository to check for smells)
 - [ ] Write code for creating branch and making pull request
-- [ ] Write job for periodically checking repo
+- [ ] Write script for periodically checking repo
+- [ ] Write code for actually refactoring the code based on the smells suggested. Do some text processing on it if required ?
