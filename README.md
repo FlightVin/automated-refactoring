@@ -31,5 +31,5 @@ smells, the applied refactoring techniques, and any relevant metrics.
 - [x] Design smell detection
 - [x] Write API code (pulls latest code after checking for changes in the specified repository to check for smells)
 - [ ] Write code for creating branch and making pull request
-- [ ] Write script for periodically checking repo
+- [x] Write script for periodically checking repo
 - [ ] Write code for actually refactoring the code based on the smells suggested. Do some text processing on it if required ?
