@@ -1,0 +1,28 @@
+name: Daily Design Smell Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+
+jobs:
+  design_smell_detection:
+    runs-on: ubuntu-latest  # Specifies the runner environment
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3  # Checks out your repository under $GITHUB_WORKSPACE
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.6'  # Specifies the Python version
+
+      - name: Install Dependencies
+        run: |
+          pip install openai==0.28 gitpython  # Installs required packages
+
+      - name: Run Design Smell Detection Script
+        run: python3 scripts/script.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Use a repository secret for your OpenAI API key
+          
