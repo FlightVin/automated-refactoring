@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install openai==0.28 gitpython  # Installs required packages
+          pip install python-dotenv openai==0.28 gitpython  # Installs required packages
 
       - name: Run Design Smell Detection Script
         run: python3 scripts/script.py
