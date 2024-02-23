@@ -34,7 +34,7 @@ github_api_token = os.getenv("API_GITHUB_TOKEN")
 
 # constants
 GITHUB_REPO_URL = "https://github.com/FlightVin/refactoring-test-repo"
-LOCAL_REPO_PATH = "./cloned_repo"
+LOCAL_REPO_PATH = "./temp/cloned_repo"
 
 # utility functions
 def clone_or_pull_repo(repo_url, local_path):
