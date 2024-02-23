@@ -2,6 +2,9 @@ import openai
 from dotenv import load_dotenv
 from github import Github
 
+print("deprecated")
+raise
+
 # print the version of the openai library, assert it to be equal to 0.28.0
 print(openai.__version__)
 

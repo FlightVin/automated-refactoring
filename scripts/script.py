@@ -1,13 +1,13 @@
 import openai
 from dotenv import load_dotenv
-from github import Github
+import requests
 
 import os
 from pathlib import Path
 import sys
 import git
 from git import Repo
-import subprocess
+import time
 
 # Set the "./../" from the script folder
 # dir_name = None
@@ -40,6 +40,7 @@ LOCAL_REPO_PATH = "./cloned_repo"
 def clone_or_pull_repo(repo_url, local_path):
     """
     Clone a Git repository if it doesn't exist locally, or pull the latest changes if it already exists.
+    Checks out to main/master branch
 
     Parameters:
         repo_url (str): The URL of the Git repository.
@@ -51,11 +52,19 @@ def clone_or_pull_repo(repo_url, local_path):
     if os.path.isdir(local_path):
         print("Repository already cloned. Pulling latest changes...")
         repo = Repo(local_path)
+        try:
+            repo.git.checkout('main')
+        except:
+            repo.git.checkout('master')
         origin = repo.remotes.origin
         origin.pull()
     else:
         print("Cloning repository...")
         Repo.clone_from(repo_url, local_path)
+        try:
+            repo.git.checkout('main')
+        except:
+            repo.git.checkout('master')
 
 def analyze_code_for_design_smells(code, code_smells):
     """
@@ -148,8 +157,6 @@ def list_java_files(directory):
                 java_files.append(os.path.join(root, file))
     return java_files
 
-
-
 def refactor_code(code, smells):
     try:
         refactoring_prompt = f"""
@@ -220,11 +227,43 @@ def create_pull_request(repo_owner, repo_name, base_branch, head_branch, title, 
         print(response.text)
         return None
 
+def create_and_checkout_branch(repo_path, new_branch_name):
+    """
+    Create a new branch and check out into it using GitPython.
+
+    Args:
+        repo_path (str): Path to the local repository.
+        new_branch_name (str): Name of the new branch.
+
+    Returns:
+        bool: True if successful, False otherwise.
+    """
+    try:
+        repo = git.Repo(repo_path)
+        
+        # Create a new branch and check out into it
+        repo.git.checkout(b=new_branch_name)
+
+        print(f"Branch '{new_branch_name}' created and checked out successfully!")
+        return True
+    except git.GitCommandError as e:
+        print(f"Failed to create and check out branch. Error: {e}")
+        return False
+
 # clone repo
 clone_or_pull_repo(GITHUB_REPO_URL, LOCAL_REPO_PATH)
 print("Repository cloned successfully")
 
 java_file_paths = list_java_files(LOCAL_REPO_PATH)
+
+timestamp = int(time.time())
+new_branch_name = f"branch_{timestamp}"
+new_branch_formed = create_and_checkout_branch(LOCAL_REPO_PATH, new_branch_name)
+if new_branch_formed:
+    print(f"Formed new branch {new_branch_name}")
+else:
+    print("Could not form new branch")
+    raise
 
 for file_path in java_file_paths:
     print("Analyzing code in file:", file_path)
@@ -252,4 +291,12 @@ for file_path in java_file_paths:
         with open('refactored_code.java', 'w') as file:
             file.write(refactored_code)
 
-    
+repo_owner = 'FlightVin'
+repo_name = 'refactoring-test-repo'
+base_branch = 'main'
+head_branch = new_branch_name
+title = 'Refactor'
+body = 'The code has been refactored based on smells detected.'
+
+pull_request_info = create_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body, github_api_token)
+print(pull_request_info)
