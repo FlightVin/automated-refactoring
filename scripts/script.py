@@ -8,6 +8,7 @@ import sys
 import git
 from git import Repo
 import time
+import subprocess
 
 # Set the "./../" from the script folder
 # dir_name = None
@@ -35,6 +36,8 @@ github_api_token = os.getenv("API_GITHUB_TOKEN")
 # constants
 GITHUB_REPO_URL = "https://github.com/FlightVin/refactoring-test-repo"
 LOCAL_REPO_PATH = "./temp"
+
+GITHUB_REPO_URL = GITHUB_REPO_URL.replace('https://', f'https://x-access-token:{github_api_token}@')
 
 # utility functions
 def clone_or_pull_repo(repo_url, local_path):
@@ -267,44 +270,61 @@ else:
     print("Could not form new branch")
     raise
 
+all_design_smells = ""
+
 for (i, file_path) in enumerate(java_file_paths):
+    # NOTE: specifically chosen file under token limit
+    file_path = "temp/books-core/src/main/java/com/sismics/util/jpa/DbOpenHelper.java"
+
     print("Analyzing code in file:", file_path)
 
     # code metrics
     with open(file_path, 'r') as file:
-        code = file.read()
-        code_smells = analyze_code_for_code_smells(code)
-        print("Code Smells Found:", code_smells)
-        print('\n')
-        print("Code smells Analysis Complete")
+        code = file.read()[:3000]
+    
+    code_smells = analyze_code_for_code_smells(code)
+    print("Code Smells Found:", code_smells)
+    print('\n')
+    print("Code smells Analysis Complete")
     
     # finding design smells
-    with open(file_path, 'r') as file:
-        code = file.read()
-        design_smells = analyze_code_for_design_smells(code, code_smells)
-        print("Design Smells Found:", design_smells)
-        print('\n')
-        print("Code smells Analysis Complete")
+    design_smells = analyze_code_for_design_smells(code, code_smells)
+    print("Design Smells Found:", design_smells)
+    print('\n')
+    print("Design smells Analysis Complete")
 
     # Refactoring code
-    with open(file_path, 'r') as file:
-        code = file.read()
-        refactored_code = refactor_code(design_smells, code)
+    refactored_code = refactor_code(design_smells, code)
 
     # writing the refactored code
     with open(file_path, 'w') as file:
         file.write(refactored_code)
 
-    if i == 5:
-        print(f"\nBreaking to preserve API limit after {i} files\n")
+    print("\nRefactored code:\n\n")
+    print(refactored_code)
+
+    all_design_smells += f"Design smells in {file_path}"
+    all_design_smells += "\n"
+    all_design_smells += design_smells
+    all_design_smells += "\n"
+
+    if i == 0:
+        print(f"\nBreaking to preserve API limit after {i+1} files\n")
         break
+
+repo = git.Repo(LOCAL_REPO_PATH)
+repo.git.add('--all')
+repo.index.commit(f"Refactor some code at {timestamp}")
+print(f"Commited changes to our new branch {new_branch_name}\n")
+
+repo.git.push("origin", new_branch_name, set_upstream=True)
+print(f"Pushed new branch {new_branch_name} to remote\n")
 
 repo_owner = 'FlightVin'
 repo_name = 'refactoring-test-repo'
 base_branch = 'main'
 head_branch = new_branch_name
-title = 'Refactor'
-body = 'The code has been refactored based on smells detected.'
+title = f"Refactor code at {timestamp}"
+body = f"The code has been refactored based on smells detected. \n{all_design_smells}"
 
 pull_request_info = create_pull_request(repo_owner, repo_name, base_branch, head_branch, title, body, github_api_token)
-print(pull_request_info)
