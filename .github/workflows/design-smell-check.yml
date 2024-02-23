@@ -2,7 +2,7 @@ name: Daily Design Smell Check
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs at 00:00 UTC every day
+    - cron: '*/10 * * * *'  # Runs every ten minutes
 
 jobs:
   design_smell_detection:
