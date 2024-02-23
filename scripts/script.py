@@ -52,10 +52,11 @@ def clone_or_pull_repo(repo_url, local_path):
     if os.path.isdir(local_path):
         print("Repository already cloned. Pulling latest changes...")
         repo = Repo(local_path)
+        print(repo)
         try:
             repo.git.checkout('main')
         except:
-            repo.git.checkout('master')
+            raise
         origin = repo.remotes.origin
         origin.pull()
     else:
