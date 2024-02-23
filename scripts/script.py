@@ -288,8 +288,10 @@ for file_path in java_file_paths:
     with open(file_path, 'r') as file:
         code = file.read()
         refactored_code = refactor_code(design_smells, code)
-        with open('refactored_code.java', 'w') as file:
-            file.write(refactored_code)
+
+    # writing the refactored code
+    with open(file_path, 'w') as file:
+        file.write(refactored_code)
 
 repo_owner = 'FlightVin'
 repo_name = 'refactoring-test-repo'
