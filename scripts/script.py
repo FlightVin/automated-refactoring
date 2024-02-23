@@ -274,7 +274,7 @@ for file_path in java_file_paths:
     with open(file_path, 'r') as file:
         code = file.read()
         code_smells = analyze_code_for_code_smells(code)
-        print("Code Smells Found:", design_smells)
+        print("Code Smells Found:", code_smells)
         print('\n')
         print("Code smells Analysis Complete")
     
