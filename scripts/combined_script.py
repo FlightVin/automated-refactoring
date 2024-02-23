@@ -99,7 +99,8 @@ def create_pull_request(repo_name, base_branch, new_branch_name, file_path, refa
 
 clone_or_pull_repo(GITHUB_REPO_URL, LOCAL_REPO_PATH)
 print("Repository cloned successfully")
-file_path = os.path.join(LOCAL_REPO_PATH, 'books-core/src/main/java/com/sismics/books/core/model/jpa/UserBookTag.java')
+file_path = os.path.join(LOCAL_REPO_PATH, 
+    'books-core/src/main/java/com/sismics/books/core/model/jpa/UserBookTag.java')
 print("Analyzing code in file:", file_path)
 
 with open(file_path, 'r') as file:

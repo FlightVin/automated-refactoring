@@ -25,4 +25,5 @@ jobs:
         run: python3 scripts/script.py
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # Use a repository secret for your OpenAI API key
+          API_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
           
