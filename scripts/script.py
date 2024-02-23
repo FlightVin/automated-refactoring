@@ -267,7 +267,7 @@ else:
     print("Could not form new branch")
     raise
 
-for file_path in java_file_paths:
+for (i, file_path) in enumerate(java_file_paths):
     print("Analyzing code in file:", file_path)
 
     # code metrics
@@ -294,6 +294,10 @@ for file_path in java_file_paths:
     # writing the refactored code
     with open(file_path, 'w') as file:
         file.write(refactored_code)
+
+    if i == 5:
+        print(f"\nBreaking to preserve API limit after {i} files\n")
+        break
 
 repo_owner = 'FlightVin'
 repo_name = 'refactoring-test-repo'
