@@ -62,6 +62,7 @@ def clone_or_pull_repo(repo_url, local_path):
     else:
         print("Cloning repository...")
         repo = Repo.clone_from(repo_url, local_path)
+        print(repo)
         try:
             repo.git.checkout('main')
         except:
